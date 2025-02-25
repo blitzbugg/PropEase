@@ -1,10 +1,18 @@
 import React from 'react'
-import Navbar from '../components/Navbar'
-
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import HomePage from './routes/HomePage';
+import ListPage from './routes/ListPage';
+import SinglePage from './routes/SinglePage';
 function App() {
   return (
     <>
-      <Navbar />
+      <BrowserRouter>
+      <Routes>
+      <Route index element={<HomePage />} />
+      <Route path='/list' element={<ListPage />} />
+      <Route path='/:id' element={<SinglePage />} />
+      </Routes>
+      </BrowserRouter>
     </>
   )
 }
