@@ -1,11 +1,9 @@
 import React from 'react';
-import RealEstateNavbar from '../components/Navbar';
 import SearchBar from '../components/SearchBar';
 
 const HomePage = () => {
   return (
     <div className="bg-gradient-to-br from-indigo-100 to-purple-100 min-h-screen">
-      <RealEstateNavbar />
       <div className="relative overflow-hidden">
         <div className="absolute inset-0">
           <img

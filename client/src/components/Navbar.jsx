@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 
-const RealEstateNavbar = () => {
+const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <nav className="bg-gradient-to-r from-indigo-100 to-purple-100 shadow-md fixed w-full top-0 z-50">
+    <nav className="relative bg-gradient-to-r from-indigo-100 to-purple-100 shadow-md w-full top-0 z-50">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex justify-between h-16 items-center">
           {/* Logo and brand */}
@@ -152,4 +152,4 @@ const RealEstateNavbar = () => {
   );
 };
 
-export default RealEstateNavbar;
+export default Navbar;
