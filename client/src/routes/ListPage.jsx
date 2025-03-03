@@ -42,24 +42,27 @@ const ListPage = () => {
       <Filter onSearch={handleSearch} />
 
       <div className="flex flex-col-reverse lg:flex-row mt-6 gap-6">
-        <div className="lg:w-1/2 overflow-y-auto" style={{ maxHeight: '80vh' }}>
-          {filteredProperties.length === 0 ? (
-            <div className="bg-white p-6 rounded-xl shadow-lg text-center border border-gray-200">
-              <p className="text-gray-600 font-medium">
-                No properties found. Try tweaking your filters!
-              </p>
-            </div>
-          ) : (
-            filteredProperties.map((property) => (
-              <Card key={property.id} property={property} />
-            ))
-          )}
-        </div>
-
-        <div className="lg:w-1/2 h-[600px]">
-          <Map properties={filteredProperties} />
-        </div>
+  {/* Property List */}
+  <div className="lg:w-1/2 overflow-y-auto" style={{ maxHeight: '80vh' }}>
+    {filteredProperties.length === 0 ? (
+      <div className="bg-white p-6 rounded-xl shadow-lg text-center border border-gray-200">
+        <p className="text-gray-600 font-medium">
+          No properties found. Try tweaking your filters!
+        </p>
       </div>
+    ) : (
+      filteredProperties.map((property) => (
+        <Card key={property.id} property={property} />
+      ))
+    )}
+  </div>
+
+  {/* Map Container */}
+  <div className="lg:w-1/2 h-[500px] rounded-xl overflow-hidden shadow-md border border-gray-200">
+    <Map items={Data} />
+  </div>
+</div>
+
     </div>
   );
 };
