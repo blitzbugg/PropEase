@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [user, setUser] = useState(true);
 
   return (
     <nav className="relative bg-gradient-to-r from-indigo-100 to-purple-100 shadow-md w-full top-0 z-50">
@@ -31,40 +33,54 @@ const Navbar = () => {
 
           {/* Desktop navigation links */}
           <div className="hidden md:flex items-center space-x-6">
-            <a
-              href="#"
-              className="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-medium"
-            >
+            <Link to="/" className="text-gray-700 hover:text-indigo-600 text-sm font-medium">
               Home
-            </a>
-            <a
-              href="#"
-              className="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-medium"
-            >
+            </Link>
+            <Link to="/about" className="text-gray-700 hover:text-indigo-600 text-sm font-medium">
               About
-            </a>
-            <a
-              href="#"
-              className="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-medium"
-            >
+            </Link>
+            <Link to="/contact" className="text-gray-700 hover:text-indigo-600 text-sm font-medium">
               Contact
-            </a>
-            <a
-              href="#"
-              className="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-medium"
-            >
+            </Link>
+            <Link to="/agents" className="text-gray-700 hover:text-indigo-600 text-sm font-medium">
               Agents
-            </a>
+            </Link>
           </div>
 
-          {/* Auth buttons */}
+          {/* Auth buttons - Desktop */}
           <div className="hidden md:flex items-center space-x-4">
-            <button className="px-4 py-2 border border-indigo-600 text-indigo-600 rounded-md hover:bg-indigo-50 text-sm font-medium transition-colors duration-200">
-              Sign In
-            </button>
-            <button className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-md hover:from-blue-700 hover:to-purple-700 text-sm font-medium transition-colors duration-200">
-              Sign Up
-            </button>
+            {user ? (
+              // User is logged in - show profile with notification badge
+              <div className="flex items-center space-x-3">
+                <div className="relative">
+                  <img
+                    src="https://images.unsplash.com/photo-1527980965255-d3b416303d12?q=80&w=2080&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                    alt="profile"
+                    className="w-8 h-8 rounded-full object-cover"
+                  />
+                  <span className="absolute top-0 right-0 bg-red-500 text-white rounded-full px-2 py-1 text-xs transform translate-x-1/2 -translate-y-1/2">
+                    3
+                  </span>
+                </div>
+                <span className="text-gray-800 text-sm font-medium">John Doe</span>
+                <Link
+                  to="/profile"
+                  className="text-gray-700 hover:text-indigo-600 text-sm font-medium"
+                >
+                  Profile
+                </Link>
+              </div>
+            ) : (
+              // User is not logged in - show auth buttons
+              <>
+                <button className="px-4 py-2 border border-indigo-600 text-indigo-600 rounded-md hover:bg-indigo-50 text-sm font-medium transition-colors duration-200">
+                  Sign In
+                </button>
+                <button className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-md hover:from-blue-700 hover:to-purple-700 text-sm font-medium transition-colors duration-200">
+                  Sign Up
+                </button>
+              </>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -138,12 +154,40 @@ const Navbar = () => {
               Agents
             </a>
             <div className="pt-4 pb-3 space-y-2">
-              <button className="w-full text-center px-4 py-2 border border-indigo-600 text-indigo-600 rounded-md hover:bg-indigo-50 text-sm font-medium transition-colors duration-200">
-                Sign In
-              </button>
-              <button className="w-full text-center px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-md hover:from-blue-700 hover:to-purple-700 text-sm font-medium transition-colors duration-200">
-                Sign Up
-              </button>
+              {user ? (
+                // User is logged in - show profile with notification badge in mobile view
+                <div className="flex flex-col items-start space-y-2 px-3">
+                  <div className="flex items-center space-x-3">
+                    <div className="relative">
+                      <img
+                        src="https://images.unsplash.com/photo-1527980965255-d3b416303d12?q=80&w=2080&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                        alt="profile"
+                        className="w-8 h-8 rounded-full object-cover"
+                      />
+                      <span className="absolute top-0 right-0 bg-red-500 text-white rounded-full px-2 py-1 text-xs transform translate-x-1/2 -translate-y-1/2">
+                        3
+                      </span>
+                    </div>
+                    <span className="text-gray-800 text-sm font-medium">John Doe</span>
+                  </div>
+                  <Link
+                    to="/profile"
+                    className="text-gray-700 hover:text-indigo-600 text-sm font-medium"
+                  >
+                    View Profile
+                  </Link>
+                </div>
+              ) : (
+                // User is not logged in - show auth buttons in mobile view
+                <>
+                  <button className="w-full text-center px-4 py-2 border border-indigo-600 text-indigo-600 rounded-md hover:bg-indigo-50 text-sm font-medium transition-colors duration-200">
+                    Sign In
+                  </button>
+                  <button className="w-full text-center px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-md hover:from-blue-700 hover:to-purple-700 text-sm font-medium transition-colors duration-200">
+                    Sign Up
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
