@@ -2,8 +2,21 @@ import React from 'react';
 import { userData, listData } from '../lib/dummydata';
 import List from '../components/List';
 import Chat from '../components/Chat';
+import apiRequest from '../lib/apiRequest';
+import { useNavigate } from 'react-router-dom';
 
 const ProfilePage = () => {
+
+  const navigate = useNavigate();
+  const handleLogout = async () => {
+    try {
+      const res = await apiRequest.post("/auth/logout");
+      localStorage.removeItem("user");
+      navigate("/login");
+    } catch (error) {
+      
+    }
+  }
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
       <div className="flex flex-col md:flex-row">
@@ -39,6 +52,7 @@ const ProfilePage = () => {
                 <div>
                   <h3 className="text-sm font-medium text-gray-500">Email</h3>
                   <p className="text-lg font-semibold text-gray-900">rahul.nair@example.com</p>
+                  <button onClick={handleLogout} className='w-25 bg-teal-600 border-none text-white px-1 py-1 mt-5 rounded'>Logout</button>
                 </div>
               </div>
             </div>
