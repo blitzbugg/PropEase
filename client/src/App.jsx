@@ -5,6 +5,8 @@ import ListPage from './routes/ListPage';
 import SinglePage from './routes/SinglePage';
 import Navbar from './components/Navbar';
 import ProfilePage from './routes/ProfilePage';
+import Register from './routes/Register';
+import Login from './routes/Login';
 function App() {
   return (
     <>
@@ -12,6 +14,8 @@ function App() {
     <Navbar />
       <Routes>
       <Route index element={<HomePage />} />
+      <Route path='/register' element={<Register />} />
+      <Route path='/login' element={<Login />} />
       <Route path='/list' element={<ListPage />} />
       <Route path='/:id' element={<SinglePage />} />
       <Route path='/profile' element={<ProfilePage />} />
