@@ -182,3 +182,68 @@ export const userData = {
   name: "Rahul Nair",
   img: "https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
 };
+
+
+// Sample data for chat messages
+
+export const contacts = [
+    {
+      id: 1,
+      name: "John Doe",
+      avatar: "https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+      lastMessage: "Yes, it's available. Would you like to schedule a virtual tour?",
+      timestamp: "10:40 AM",
+      unread: 1,
+    },
+    {
+      id: 2,
+      name: "Jane Smith",
+      avatar: "https://images.pexels.com/photos/1036623/pexels-photo-1036623.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+      lastMessage: "I'll let you know about the pricing soon.",
+      timestamp: "Yesterday",
+      unread: 0,
+    },
+    {
+      id: 3,
+      name: "Robert Johnson",
+      avatar: "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+      lastMessage: "The property in Munnar is still available.",
+      timestamp: "Mar 20",
+      unread: 2,
+    },
+    {
+      id: 4,
+      name: "Sarah Williams",
+      avatar: "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+      lastMessage: "Thanks for your interest in the Kovalam villa.",
+      timestamp: "Mar 18",
+      unread: 0,
+    },
+  ];
+
+  // Sample messages for the selected chat
+  export const messages = [
+    {
+      id: 1,
+      sender: "John Doe",
+      avatar: "https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+      content: "Hey there! How's the property search going?",
+      timestamp: "10:32 AM",
+      isOwn: false,
+    },
+    {
+      id: 2,
+      sender: "Me",
+      content: "Great! I'm interested in the Beachfront Villa in Kovalam. Is it available next month?",
+      timestamp: "10:35 AM",
+      isOwn: true,
+    },
+    {
+      id: 3,
+      sender: "John Doe",
+      avatar: "https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+      content: "Yes, it's available. Would you like to schedule a virtual tour?",
+      timestamp: "10:40 AM",
+      isOwn: false,
+    },
+  ];
