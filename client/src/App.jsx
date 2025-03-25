@@ -4,6 +4,7 @@ import HomePage from './routes/HomePage';
 import ListPage from './routes/ListPage';
 import SinglePage from './routes/SinglePage';
 import ProfilePage from './routes/ProfilePage';
+import ProfileUpdatePage from './routes/ProfileUpdatePage';
 import Register from './routes/Register';
 import Login from './routes/Login';
 import { Layout, RequireAuth } from "./routes/Layout";
@@ -23,6 +24,7 @@ function App() {
         {/* Protected routes wrapped with RequireAuth */}
         <Route element={<RequireAuth />}>
           <Route path='/profile' element={<ProfilePage />} />
+          <Route path='/profile/update' element={<ProfileUpdatePage />} />
           <Route path='/:id' element={<SinglePage />} />
           {/* Add other protected routes here */}
         </Route>

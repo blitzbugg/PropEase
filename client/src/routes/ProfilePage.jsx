@@ -3,7 +3,7 @@ import { userData, listData } from '../lib/dummydata';
 import List from '../components/List';
 import Chat from '../components/Chat';
 import apiRequest from '../lib/apiRequest';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 
 const ProfilePage = () => {
@@ -32,9 +32,12 @@ const ProfilePage = () => {
           <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
             <div className="flex justify-between items-center mb-6">
               <h1 className="text-2xl font-bold text-gray-900">User Information</h1>
+              <Link to="/profile/update">
               <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors duration-300">
                 Update Profile
               </button>
+              </Link>
+              
             </div>
 
             {/* User details */}
