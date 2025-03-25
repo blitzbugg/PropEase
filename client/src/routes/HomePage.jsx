@@ -1,7 +1,13 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import SearchBar from '../components/SearchBar';
+import { AuthContext } from '../context/AuthContext';
 
 const HomePage = () => {
+
+  const {currentUser} = useContext(AuthContext);
+
+  console.log(currentUser);
+  
   return (
     <div className="bg-gradient-to-br from-indigo-100 to-purple-100 min-h-screen">
       <div className="relative overflow-hidden">

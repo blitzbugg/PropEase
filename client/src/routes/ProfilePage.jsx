@@ -1,23 +1,29 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { userData, listData } from '../lib/dummydata';
 import List from '../components/List';
 import Chat from '../components/Chat';
 import apiRequest from '../lib/apiRequest';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
 
 const ProfilePage = () => {
 
+  const {updateUser,currentUser} = useContext(AuthContext);
+
   const navigate = useNavigate();
+
+
   const handleLogout = async () => {
     try {
-      const res = await apiRequest.post("/auth/logout");
-      localStorage.removeItem("user");
+      await apiRequest.post("/auth/logout");
+      updateUser(null);
       navigate("/login");
     } catch (error) {
       
     }
   }
   return (
+
     <div className="container mx-auto px-4 py-8 max-w-6xl">
       <div className="flex flex-col md:flex-row">
         {/* Left side - 50% width */}
@@ -36,7 +42,7 @@ const ProfilePage = () => {
               <div className="flex-shrink-0">
                 <div className="relative w-28 h-28 rounded-full overflow-hidden border-4 border-gray-200">
                   <img
-                    src={userData.img}
+                    src={currentUser.avatar || "https://upload.wikimedia.org/wikipedia/commons/9/9a/No_avatar.png"}
                     alt={userData.name}
                     className="w-full h-full object-cover"
                   />
@@ -46,12 +52,12 @@ const ProfilePage = () => {
               <div className="flex-grow space-y-4">
                 <div>
                   <h3 className="text-sm font-medium text-gray-500">Username</h3>
-                  <p className="text-lg font-semibold text-gray-900">{userData.name}</p>
+                  <p className="text-lg font-semibold text-gray-900">{currentUser.username}</p>
                 </div>
 
                 <div>
                   <h3 className="text-sm font-medium text-gray-500">Email</h3>
-                  <p className="text-lg font-semibold text-gray-900">rahul.nair@example.com</p>
+                  <p className="text-lg font-semibold text-gray-900">{currentUser.email}</p>
                   <button onClick={handleLogout} className='w-25 bg-teal-600 border-none text-white px-1 py-1 mt-5 rounded'>Logout</button>
                 </div>
               </div>
@@ -86,7 +92,8 @@ const ProfilePage = () => {
         </div>
       </div>
     </div>
-  );
+  
+);
 };
 
 export default ProfilePage;

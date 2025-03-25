@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [user, setUser] = useState(true);
+
+  const {currentUser} = useContext(AuthContext);
 
   return (
     <nav className="relative bg-gradient-to-r from-indigo-100 to-purple-100 shadow-md w-full top-0 z-50">
@@ -27,7 +29,7 @@ const Navbar = () => {
               </svg>
             </div>
             <span className="ml-2 text-xl font-semibold text-gray-800">
-              RealEstate
+              PropEase
             </span>
           </div>
 
@@ -49,12 +51,12 @@ const Navbar = () => {
 
           {/* Auth buttons - Desktop */}
           <div className="hidden md:flex items-center space-x-4">
-            {user ? (
+            {currentUser ? (
               // User is logged in - show profile with notification badge
               <div className="flex items-center space-x-3">
                 <div className="relative">
                   <img
-                    src="https://images.unsplash.com/photo-1527980965255-d3b416303d12?q=80&w=2080&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                    src={currentUser.avatar || "https://upload.wikimedia.org/wikipedia/commons/9/9a/No_avatar.png"}
                     alt="profile"
                     className="w-8 h-8 rounded-full object-cover"
                   />
@@ -62,7 +64,7 @@ const Navbar = () => {
                     3
                   </span>
                 </div>
-                <span className="text-gray-800 text-sm font-medium">John Doe</span>
+                <span className="text-gray-800 text-sm font-medium">{currentUser.username}</span>
                 <Link
                   to="/profile"
                   className="text-gray-700 hover:text-indigo-600 text-sm font-medium"
@@ -73,12 +75,12 @@ const Navbar = () => {
             ) : (
               // User is not logged in - show auth buttons
               <>
-                <button className="px-4 py-2 border border-indigo-600 text-indigo-600 rounded-md hover:bg-indigo-50 text-sm font-medium transition-colors duration-200">
+                <a href='/login' className="px-4 py-2 border border-indigo-600 text-indigo-600 rounded-md hover:bg-indigo-50 text-sm font-medium transition-colors duration-200">
                   Sign In
-                </button>
-                <button className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-md hover:from-blue-700 hover:to-purple-700 text-sm font-medium transition-colors duration-200">
+                </a>
+                <a href='/register' className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-md hover:from-blue-700 hover:to-purple-700 text-sm font-medium transition-colors duration-200">
                   Sign Up
-                </button>
+                </a>
               </>
             )}
           </div>
