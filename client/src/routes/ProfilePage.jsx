@@ -71,9 +71,12 @@ const ProfilePage = () => {
           <div className="bg-white rounded-xl shadow-lg p-6">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold text-gray-900">My List</h2>
+              
+              <Link to="/add">
               <button className="bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white px-4 py-2 rounded-lg transition-colors duration-300 shadow-md">
                 Add New Post
               </button>
+              </Link>
             </div>
 
             <List data={listData} />

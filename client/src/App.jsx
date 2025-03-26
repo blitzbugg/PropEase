@@ -8,6 +8,7 @@ import ProfileUpdatePage from './routes/ProfileUpdatePage';
 import Register from './routes/Register';
 import Login from './routes/Login';
 import { Layout, RequireAuth } from "./routes/Layout";
+import NewPostPage from './routes/NewPostPage';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
           <Route path='/profile' element={<ProfilePage />} />
           <Route path='/profile/update' element={<ProfileUpdatePage />} />
           <Route path='/:id' element={<SinglePage />} />
+          <Route path='/add' element={<NewPostPage />} />
           {/* Add other protected routes here */}
         </Route>
       </Routes>

@@ -7,7 +7,7 @@ import UploadWidget from "../components/UploadWidget";
 function ProfileUpdatePage() {
   const { currentUser, updateUser } = useContext(AuthContext);
   const [error, setError] = useState("");
-  const [avatar, setAvatar] = useState(currentUser.avatar); 
+  const [avatar, setAvatar] = useState([]); 
 
   const navigate = useNavigate();
 
@@ -22,7 +22,7 @@ function ProfileUpdatePage() {
         username,
         email,
         password,
-        avatar,
+        avatar: avatar[0],
       });
       updateUser(res.data);
       navigate("/profile");
@@ -77,7 +77,7 @@ function ProfileUpdatePage() {
       </div>
       <div className="flex-[2] bg-rose-50 flex flex-col gap-5 items-center justify-center p-4">
         <img 
-          src={avatar || "/noavatar.jpg"} 
+          src={avatar[0] || currentUser.avatar || "/noavatar.jpg"} 
           alt="Profile" 
           className="w-1/2 object-cover rounded-full aspect-square"
         />
@@ -86,7 +86,7 @@ function ProfileUpdatePage() {
           multiple:false, 
           maxImageFileSize: 2000000,
           folder : "avatars",
-           }} setAvatar={setAvatar} 
+           }} setState={setAvatar} 
            />
       </div>
     </div>
