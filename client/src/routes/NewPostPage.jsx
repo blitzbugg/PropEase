@@ -457,8 +457,9 @@
             )}
             <UploadWidget
               uwConfig={{
+              cloudName: "dslrhfcwf",
               uploadPreset: "propease", 
-              multiple:false, 
+              multiple:true, 
               folder : "posts",
               }}
               setState={setImages}
