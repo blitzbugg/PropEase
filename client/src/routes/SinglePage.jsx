@@ -1,9 +1,11 @@
 import React from "react";
 import Slider from "../components/Slider";
-import { singlePostData } from "../lib/dummydata";
-import Map from "../components/Map"; // Import the Map component
+import { useLoaderData } from "react-router-dom";
+import Map from "../components/Map";
 
 const SinglePage = () => {
+  const post = useLoaderData();
+  
   return (
     <div className="p-4 max-w-6xl mx-auto">
       <div className="flex gap-8">
@@ -11,41 +13,52 @@ const SinglePage = () => {
         <div className="flex-1 bg-white rounded-lg shadow-sm overflow-hidden">
           {/* Image Slider */}
           <div className="p-4">
-            <Slider images={singlePostData.images} />
+            <Slider images={post.images} />
           </div>
 
           {/* Post Details */}
           <div className="px-4 pb-4">
             <div className="flex justify-between items-start flex-wrap">
               <div>
-                <h1 className="text-2xl font-bold mt-2">{singlePostData.title}</h1>
+                <h1 className="text-2xl font-bold mt-2">{post.title}</h1>
                 <p className="text-gray-500 text-sm">
-                  {singlePostData.address}, {singlePostData.city}
+                  {post.address}, {post.city}
                 </p>
               </div>
               <p className="text-xl font-semibold text-blue-600 mt-2">
-                ₹{singlePostData.price}
+                ₹{post.price}
               </p>
+            </div>
+
+            {/* Property Type */}
+            <div className="mt-2 flex gap-2">
+              <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
+                {post.type}
+              </span>
+              <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
+                {post.property}
+              </span>
             </div>
 
             {/* Owner Profile */}
             <div className="flex items-center gap-3 mt-4 bg-gray-50 p-3 rounded-md">
               <img
-                src={singlePostData.owner.img}
-                alt={singlePostData.owner.name}
+                src={post.user.avatar || "noavatar.png"}
+                alt={post.user.username}
                 className="w-10 h-10 rounded-full object-cover border border-gray-200"
               />
               <span className="text-md font-medium">
-                {singlePostData.owner.name}
+                {post.user.username}
               </span>
             </div>
 
             {/* Description */}
             <div className="mt-4">
               <h2 className="text-lg font-semibold mb-2">Description</h2>
-              <p className="text-gray-700 text-sm leading-relaxed">
-                {singlePostData.description}
-              </p>
+              <div 
+                className="text-gray-700 text-sm leading-relaxed"
+                dangerouslySetInnerHTML={{ __html: post.postDetail.desc }}
+              />
             </div>
           </div>
         </div>
@@ -58,9 +71,22 @@ const SinglePage = () => {
           <div className="mb-6">
             <h3 className="text-lg font-semibold mb-2">General</h3>
             <div className="text-sm text-gray-700">
-              <p>Utilities (Renter is responsible)</p>
-              <p>Pet policy (Pets allowed)</p>
-              <p>Advance (Must have 3x the rent)</p>
+              <div className="mb-1">
+                <span className="font-bold mr-1">Utilities:</span>
+                {post.postDetail.utilities === "owner" 
+                  ? "Owner pays for all utilities" 
+                  : "Tenant pays for all utilities"}
+              </div>
+              <div className="mb-1">
+                <span className="font-bold mr-1">Pet policy:</span>
+                {post.postDetail.pets === "allowed"
+                  ? "Pets are allowed"
+                  : "Pets are not allowed"}
+              </div>
+              <div>
+                <span className="font-bold mr-1">Income policy:</span>
+                <span>{post.postDetail.income}</span>
+              </div>
             </div>
           </div>
 
@@ -68,9 +94,9 @@ const SinglePage = () => {
           <div className="mb-6">
             <h3 className="text-lg font-semibold mb-2">Room Size</h3>
             <div className="text-sm text-gray-700">
-              <p>Room size: {singlePostData.roomSize} sqft</p>
-              <p>Number of beds: {singlePostData.beds}</p>
-              <p>Number of bathrooms: {singlePostData.bathrooms}</p>
+              <p>Bedrooms: {post.bedroom}</p>
+              <p>Bathrooms: {post.bathroom}</p>
+              <p>Size: {post.postDetail.size} sqft</p>
             </div>
           </div>
 
@@ -78,9 +104,9 @@ const SinglePage = () => {
           <div className="mb-6">
             <h3 className="text-lg font-semibold mb-2">Nearby Places</h3>
             <div className="text-sm text-gray-700">
-              <p>School: {singlePostData.nearby.school}</p>
-              <p>Bus stop: {singlePostData.nearby.busStop}</p>
-              <p>Restaurant: {singlePostData.nearby.restaurant}</p>
+              <p>School: {post.postDetail.school} min away</p>
+              <p>Bus stop: {post.postDetail.bus} min away</p>
+              <p>Restaurant: {post.postDetail.restaurant} min away</p>
             </div>
           </div>
 
@@ -88,7 +114,13 @@ const SinglePage = () => {
           <div className="mb-6">
             <h3 className="text-lg font-semibold mb-2">Location</h3>
             <div className="h-64">
-              <Map items={[singlePostData]} /> {/* Render the Map component */}
+              <Map 
+                items={[{
+                  ...post,
+                  latitude: parseFloat(post.latitude),
+                  longitude: parseFloat(post.longitude)
+                }]} 
+              />
             </div>
           </div>
 

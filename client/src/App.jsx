@@ -1,5 +1,8 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import {
+  createBrowserRouter,
+  RouterProvider,
+} from 'react-router-dom';
 import HomePage from './routes/HomePage';
 import ListPage from './routes/ListPage';
 import SinglePage from './routes/SinglePage';
@@ -7,32 +10,33 @@ import ProfilePage from './routes/ProfilePage';
 import ProfileUpdatePage from './routes/ProfileUpdatePage';
 import Register from './routes/Register';
 import Login from './routes/Login';
-import { Layout, RequireAuth } from "./routes/Layout";
+import { Layout, RequireAuth } from './routes/Layout';
 import NewPostPage from './routes/NewPostPage';
+import { singlePageLoader } from './lib/loaders';
+
+const router = createBrowserRouter([
+  {
+    element: <Layout />, // Public layout wrapper
+    children: [
+      { index: true, element: <HomePage /> },
+      { path: 'list', element: <ListPage /> },
+      { path: 'login', element: <Login /> },
+      { path: 'register', element: <Register /> },
+    ],
+  },
+  {
+    element: <RequireAuth />, // Protected routes wrapper
+    children: [
+      { path: 'profile', element: <ProfilePage /> },
+      { path: 'profile/update', element: <ProfileUpdatePage /> },
+      { path: ':id', element: <SinglePage />, loader: singlePageLoader,},
+      { path: 'add', element: <NewPostPage /> },
+    ],
+  },
+]);
 
 function App() {
-  return (
-    <BrowserRouter>
-      <Routes>
-        {/* Public routes wrapped with Layout */}
-        <Route element={<Layout />}>
-          <Route index element={<HomePage />} />
-          <Route path='/list' element={<ListPage />} />
-          <Route path='/login' element={<Login />} />
-          <Route path='/register' element={<Register />} />
-        </Route>
-
-        {/* Protected routes wrapped with RequireAuth */}
-        <Route element={<RequireAuth />}>
-          <Route path='/profile' element={<ProfilePage />} />
-          <Route path='/profile/update' element={<ProfileUpdatePage />} />
-          <Route path='/:id' element={<SinglePage />} />
-          <Route path='/add' element={<NewPostPage />} />
-          {/* Add other protected routes here */}
-        </Route>
-      </Routes>
-    </BrowserRouter>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;
