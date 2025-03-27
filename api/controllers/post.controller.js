@@ -96,22 +96,37 @@ export const updatePost = async (req, res) => {
 export const deletePost = async (req, res) => {
     const id = req.params.id;
     const tokenUserId = req.userId;
+
     try {
-        
+        // Find the post with its details
         const post = await prisma.post.findUnique({
-            where: {id}
-        })
+            where: { id },
+            include: { postDetail: true } // Include postDetail to check relation
+        });
+
+        if (!post) {
+            return res.status(404).json({ message: "Post not found" });
+        }
 
         if (post.UserId !== tokenUserId) {
             return res.status(403).json({ message: "You are not authorized to delete this post" });
         }
 
+        // Delete associated postDetail first
+        if (post.postDetail) {
+            await prisma.postDetail.delete({
+                where: { PostId: id }
+            });
+        }
+
+        // Now delete the post
         await prisma.post.delete({
-            where: {id}
-        })
-        res.status(200).json({ message: "Post deleted" });
+            where: { id }
+        });
+
+        res.status(200).json({ message: "Post deleted successfully" });
     } catch (err) {
         console.log(err);
         res.status(500).json({ message: "Error deleting post" });
     }
-}
+};
