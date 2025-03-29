@@ -1,20 +1,35 @@
 import React from 'react';
 
-const Card = ({ property }) => {
+const Card = ({ property = {} }) => {
+  // Set default values for all required properties
+  const {
+    images = '/default-property.jpg',
+    title = 'Untitled Property',
+    address = 'Address not available',
+    price = 0,
+    bedroom = 0,
+    bathroom = 1
+  } = property;
+
   return (
     <div className="flex flex-col md:flex-row bg-white rounded-xl shadow-lg overflow-hidden mb-4 transform transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+      {/* Image Section with fallback */}
       <div className="md:w-2/5 h-48 overflow-hidden relative">
         <img
-          src={property.img}
-          alt={property.title}
+          src={images[0]}
+          alt={title}
           className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+          onError={(e) => {
+            e.target.src = '/default-property.jpg';
+          }}
         />
       </div>
 
+      {/* Content Section */}
       <div className="p-4 md:w-3/5 flex flex-col justify-between">
         <div>
           <h2 className="text-lg font-bold text-gray-900 mb-2 tracking-tight">
-            {property.title}
+            {title}
           </h2>
 
           <div className="flex items-center mb-2">
@@ -23,11 +38,11 @@ const Card = ({ property }) => {
               alt="Location"
               className="h-4 w-4 text-gray-500 mr-1"
             />
-            <span className="text-gray-600 text-xs">{property.address}</span>
+            <span className="text-gray-600 text-xs">{address}</span>
           </div>
 
           <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 inline-block px-3 py-1 rounded-full mb-2 text-white font-semibold shadow-sm">
-            <span className="text-sm">$ {property.price}</span>
+            <span className="text-sm">$ {price.toLocaleString()}</span>
           </div>
 
           <div className="flex flex-wrap gap-3">
@@ -36,8 +51,13 @@ const Card = ({ property }) => {
                 src="./bed.png"
                 alt="Bedrooms"
                 className="h-4 w-4 text-gray-500 mr-1"
+                onError={(e) => {
+                  e.target.src = 'https://cdn-icons-png.flaticon.com/512/659/659841.png';
+                }}
               />
-              <span className="text-gray-700 text-xs">{property.bedroom} beds</span>
+              <span className="text-gray-700 text-xs">
+                {bedroom} bed{bedroom !== 1 && 's'}
+              </span>
             </div>
 
             <div className="flex items-center">
@@ -45,9 +65,12 @@ const Card = ({ property }) => {
                 src="./bath.png"
                 alt="Bathrooms"
                 className="h-4 w-4 text-gray-500 mr-1"
+                onError={(e) => {
+                  e.target.src = 'https://cdn-icons-png.flaticon.com/512/659/659841.png';
+                }}
               />
               <span className="text-gray-700 text-xs">
-                {property.bathroom} bath{property.bathroom !== 1 && 's'}
+                {bathroom} bath{bathroom !== 1 && 's'}
               </span>
             </div>
           </div>
@@ -62,6 +85,9 @@ const Card = ({ property }) => {
               src="./save.png"
               alt="Save"
               className="h-5 w-5 text-gray-500 hover:text-indigo-500 transition-colors duration-200"
+              onError={(e) => {
+                e.target.src = 'https://cdn-icons-png.flaticon.com/512/5662/5662990.png';
+              }}
             />
           </button>
 
@@ -73,6 +99,9 @@ const Card = ({ property }) => {
               src="./chat.png"
               alt="Message"
               className="h-5 w-5 text-gray-500 hover:text-indigo-500 transition-colors duration-200"
+              onError={(e) => {
+                e.target.src = 'https://cdn-icons-png.flaticon.com/512/666/666162.png';
+              }}
             />
           </button>
         </div>

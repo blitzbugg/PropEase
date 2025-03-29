@@ -1,144 +1,130 @@
-import React, { useState } from 'react';
+import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 
-const Filter = ({ onSearch }) => {
-  const [location, setLocation] = useState('');
-  const [type, setType] = useState('Any');
-  const [property, setProperty] = useState('Any');
-  const [minPrice, setMinPrice] = useState('');
-  const [maxPrice, setMaxPrice] = useState('');
-  const [bedroom, setBedroom] = useState('Any');
+function Filter() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [query, setQuery] = useState({
+    type: searchParams.get("type") || "",
+    city: searchParams.get("city") || "",
+    property: searchParams.get("property") || "",
+    minPrice: searchParams.get("minPrice") || "",
+    maxPrice: searchParams.get("maxPrice") || "",
+    bedroom: searchParams.get("bedroom") || "",
+  });
 
-  const handleSearch = () => {
-    onSearch({
-      location,
-      type,
-      property,
-      minPrice: minPrice || undefined,
-      maxPrice: maxPrice || undefined,
-      bedroom: bedroom === 'Any' ? undefined : bedroom,
+  const handleChange = (e) => {
+    setQuery({
+      ...query,
+      [e.target.name]: e.target.value,
     });
   };
 
+  const handleFilter = () => {
+    setSearchParams(query);
+  };
+
   return (
-    <div className="flex flex-col md:flex-row gap-4 p-6 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl shadow-lg border border-gray-200">
-      <div className="flex-1">
-        <label htmlFor="location" className="block text-sm font-semibold text-gray-800 mb-2">
-          Location
-        </label>
-        <input
-          type="text"
-          id="location"
-          className="w-full p-3 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300 placeholder-gray-400"
-          placeholder="Enter city location"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-        />
+    <div className="flex flex-col gap-2.5">
+      <h1 className="font-light text-2xl">
+        Search results for <b>{searchParams.get("city")}</b>
+      </h1>
+      
+      <div className="top">
+        <div className="flex flex-col gap-0.5">
+          <label htmlFor="city" className="text-xs">Location</label>
+          <input
+            type="text"
+            id="city"
+            name="city"
+            placeholder="City Location"
+            onChange={handleChange}
+            defaultValue={query.city}
+            className="w-full p-2.5 border border-gray-200 rounded-md text-sm"
+          />
+        </div>
       </div>
-
-      <div className="w-full md:w-40">
-        <label htmlFor="type" className="block text-sm font-semibold text-gray-800 mb-2">
-          Type
-        </label>
-        <select
-          id="type"
-          className="w-full p-3 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300"
-          value={type}
-          onChange={(e) => setType(e.target.value)}
-        >
-          <option value="Any">Any</option>
-          <option value="Buy">Buy</option>
-          <option value="Rent">Rent</option>
-        </select>
-      </div>
-
-      <div className="w-full md:w-40">
-        <label htmlFor="property" className="block text-sm font-semibold text-gray-800 mb-2">
-          Property
-        </label>
-        <select
-          id="property"
-          className="w-full p-3 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300"
-          value={property}
-          onChange={(e) => setProperty(e.target.value)}
-        >
-          <option value="Any">Any</option>
-          <option value="Apartment">Apartment</option>
-          <option value="House">House</option>
-          <option value="Condo">Condo</option>
-          <option value="Land">Land</option>
-        </select>
-      </div>
-
-      <div className="w-full md:w-32">
-        <label htmlFor="minPrice" className="block text-sm font-semibold text-gray-800 mb-2">
-          Min Price
-        </label>
-        <input
-          type="number"
-          id="minPrice"
-          className="w-full p-3 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300 placeholder-gray-400"
-          placeholder="Min"
-          value={minPrice}
-          onChange={(e) => setMinPrice(e.target.value)}
-        />
-      </div>
-
-      <div className="w-full md:w-32">
-        <label htmlFor="maxPrice" className="block text-sm font-semibold text-gray-800 mb-2">
-          Max Price
-        </label>
-        <input
-          type="number"
-          id="maxPrice"
-          className="w-full p-3 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300 placeholder-gray-400"
-          placeholder="Max"
-          value={maxPrice}
-          onChange={(e) => setMaxPrice(e.target.value)}
-        />
-      </div>
-
-      <div className="w-full md:w-32">
-        <label htmlFor="bedroom" className="block text-sm font-semibold text-gray-800 mb-2">
-          Bedroom
-        </label>
-        <select
-          id="bedroom"
-          className="w-full p-3 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300"
-          value={bedroom}
-          onChange={(e) => setBedroom(e.target.value)}
-        >
-          <option value="Any">Any</option>
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4+">4+</option>
-        </select>
-      </div>
-
-      <div className="flex items-end">
-        <button
-          className="w-full p-3 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white font-semibold rounded-lg shadow-md hover:from-indigo-600 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all duration-300 flex items-center justify-center"
-          onClick={handleSearch}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
+      
+      <div className="flex justify-between flex-wrap gap-5">
+        <div className="flex flex-col gap-0.5">
+          <label htmlFor="type" className="text-xs">Type</label>
+          <select
+            name="type"
+            id="type"
+            onChange={handleChange}
+            defaultValue={query.type}
+            className="w-24 p-2.5 border border-gray-200 rounded-md text-sm"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
-          <span className="ml-2">Search</span>
+            <option value="">any</option>
+            <option value="buy">Buy</option>
+            <option value="rent">Rent</option>
+          </select>
+        </div>
+        
+        <div className="flex flex-col gap-0.5">
+          <label htmlFor="property" className="text-xs">Property</label>
+          <select
+            name="property"
+            id="property"
+            onChange={handleChange}
+            defaultValue={query.property}
+            className="w-24 p-2.5 border border-gray-200 rounded-md text-sm"
+          >
+            <option value="">any</option>
+            <option value="apartment">Apartment</option>
+            <option value="house">House</option>
+            <option value="condo">Condo</option>
+            <option value="land">Land</option>
+          </select>
+        </div>
+        
+        <div className="flex flex-col gap-0.5">
+          <label htmlFor="minPrice" className="text-xs">Min Price</label>
+          <input
+            type="number"
+            id="minPrice"
+            name="minPrice"
+            placeholder="any"
+            onChange={handleChange}
+            defaultValue={query.minPrice}
+            className="w-24 p-2.5 border border-gray-200 rounded-md text-sm"
+          />
+        </div>
+        
+        <div className="flex flex-col gap-0.5">
+          <label htmlFor="maxPrice" className="text-xs">Max Price</label>
+          <input
+            type="number"
+            id="maxPrice"
+            name="maxPrice"
+            placeholder="any"
+            onChange={handleChange}
+            defaultValue={query.maxPrice}
+            className="w-24 p-2.5 border border-gray-200 rounded-md text-sm"
+          />
+        </div>
+        
+        <div className="flex flex-col gap-0.5">
+          <label htmlFor="bedroom" className="text-xs">Bedroom</label>
+          <input
+            type="text"
+            id="bedroom"
+            name="bedroom"
+            placeholder="any"
+            onChange={handleChange}
+            defaultValue={query.bedroom}
+            className="w-24 p-2.5 border border-gray-200 rounded-md text-sm"
+          />
+        </div>
+        
+        <button 
+          onClick={handleFilter}
+          className="w-24 p-2.5 border-none cursor-pointer bg-[#fece51] rounded-md"
+        >
+          <img src="/search.png" alt="" className="w-6 h-6 mx-auto" />
         </button>
       </div>
     </div>
   );
-};
+}
 
 export default Filter;
