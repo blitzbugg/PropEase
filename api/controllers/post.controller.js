@@ -1,16 +1,34 @@
 import prisma from "../lib/prisma.js";
 
 export const getPosts = async (req, res) => {
+    const query = req.query;
+    // console.log("Received query:", query);
+
+    const filters = {
+        where: {
+            city: query.city || undefined,
+            type: query.type || undefined,
+            property: query.property || undefined,
+            bedroom: query.bedroom ? parseInt(query.bedroom) : undefined,
+            price: {
+                gte: query.minPrice ? parseInt(query.minPrice) : 0,
+                lte: query.maxPrice ? parseInt(query.maxPrice) : 10000000,
+            },
+        },
+    };
+
+    // console.log("Filters being applied:", filters);
+
     try {
-
-        const posts = await prisma.post.findMany()
-
-        res.status(200).json(posts)
+        const posts = await prisma.post.findMany(filters);
+        // console.log("Posts retrieved:", posts);
+        res.status(200).json(posts);
     } catch (err) {
-        console.log(err);
-        res.status(500).json({ message: "Error getting posts" });
+        console.error("Error fetching posts:", err);
+        res.status(500).json({ message: "Failed to get posts" });
     }
-}
+};
+
 export const getPost = async (req, res) => {
 
     const id = req.params.id;

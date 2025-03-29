@@ -12,14 +12,14 @@ import Register from './routes/Register';
 import Login from './routes/Login';
 import { Layout, RequireAuth } from './routes/Layout';
 import NewPostPage from './routes/NewPostPage';
-import { singlePageLoader } from './lib/loaders';
+import { listPageLoader, singlePageLoader } from './lib/loaders';
 
 const router = createBrowserRouter([
   {
     element: <Layout />, // Public layout wrapper
     children: [
       { index: true, element: <HomePage /> },
-      { path: 'list', element: <ListPage /> },
+      { path: 'list', id: 'posts', element: <ListPage/> , loader: listPageLoader ,},
       { path: 'login', element: <Login /> },
       { path: 'register', element: <Register /> },
     ],
