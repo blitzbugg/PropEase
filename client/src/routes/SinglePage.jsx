@@ -104,9 +104,9 @@ const SinglePage = () => {
           <div className="mb-6">
             <h3 className="text-lg font-semibold mb-2">Nearby Places</h3>
             <div className="text-sm text-gray-700">
-              <p>School: {post.postDetail.school} min away</p>
-              <p>Bus stop: {post.postDetail.bus} min away</p>
-              <p>Restaurant: {post.postDetail.restaurant} min away</p>
+              <p>Schools: {post.postDetail.school}</p>
+              <p>Bus stops: {post.postDetail.bus}</p>
+              <p>Restaurants: {post.postDetail.restaurant}</p>
             </div>
           </div>
 
@@ -134,6 +134,8 @@ const SinglePage = () => {
             </button>
           </div>
         </div>
+
+        {/*  */}
       </div>
     </div>
   );
