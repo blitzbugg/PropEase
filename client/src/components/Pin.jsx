@@ -18,7 +18,7 @@ function Pin({item}) {
     <Marker position={[item.latitude, item.longitude]} icon={customIcon}>
       <Popup>
         <div className="flex gap-5">
-            <img src={item.img} alt="" className="w-16 h-12 object-cover border-2"/>
+            <img src={item.images[0]} alt="" className="w-16 h-12 object-cover border-2"/>
             <div className="flex flex-col justify-between">
                 <Link to={`/${item.id}`}>{item.title}</Link>
                 <span>{item.bedroom} bedroom</span>
