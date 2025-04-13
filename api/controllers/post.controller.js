@@ -2,7 +2,6 @@ import prisma from "../lib/prisma.js";
 
 export const getPosts = async (req, res) => {
     const query = req.query;
-    // console.log("Received query:", query);
 
     const filters = {
         where: {
@@ -17,11 +16,8 @@ export const getPosts = async (req, res) => {
         },
     };
 
-    // console.log("Filters being applied:", filters);
-
     try {
         const posts = await prisma.post.findMany(filters);
-        // console.log("Posts retrieved:", posts);
         res.status(200).json(posts);
     } catch (err) {
         console.error("Error fetching posts:", err);
@@ -30,12 +26,10 @@ export const getPosts = async (req, res) => {
 };
 
 export const getPost = async (req, res) => {
-
     const id = req.params.id;
     try {
-
         const post = await prisma.post.findUnique({
-            where: {id},
+            where: { id },
             include: {
                 postDetail: true,
                 user: {
@@ -45,41 +39,40 @@ export const getPost = async (req, res) => {
                     }
                 }
             }
-        })
-        res.status(200).json(post)
+        });
+        res.status(200).json(post);
     } catch (err) {
         console.log(err);
         res.status(500).json({ message: "Error getting post" });
     }
 }
-export const addPost = async (req, res) => {
 
+export const addPost = async (req, res) => {
     const body = req.body;
     const tokenUserId = req.userId;
     try {
         const newPost = await prisma.post.create({
             data: {
                 ...body.postData,
-                UserId : tokenUserId,
+                userId: tokenUserId,
                 postDetail: {
                     create: body.postDetail,
                 },
             }
-        })
-
-        res.status(200).json(newPost)
+        });
+        res.status(200).json(newPost);
     } catch (err) {
         console.log(err);
-        res.status(500).json({ message: "Error create post" });
+        res.status(500).json({ message: "Error creating post" });
     }
 }
+
 export const updatePost = async (req, res) => {
     const id = req.params.id;
     const tokenUserId = req.userId;
-    const { postData, postDetail } = req.body; // Extract postData and postDetail separately
+    const { postData, postDetail } = req.body;
 
     try {
-        // Check if the post exists and belongs to the authenticated user
         const existingPost = await prisma.post.findUnique({
             where: { id }
         });
@@ -88,17 +81,16 @@ export const updatePost = async (req, res) => {
             return res.status(404).json({ message: "Post not found" });
         }
 
-        if (existingPost.UserId !== tokenUserId) {
+        if (existingPost.userId !== tokenUserId) {
             return res.status(403).json({ message: "You are not authorized to update this post" });
         }
 
-        // Update post details
         const updatedPost = await prisma.post.update({
             where: { id },
             data: {
-                ...postData, // Update post main details
+                ...postData,
                 postDetail: {
-                    update: postDetail // Update related post details
+                    update: postDetail
                 }
             }
         });
@@ -110,34 +102,30 @@ export const updatePost = async (req, res) => {
     }
 };
 
-
 export const deletePost = async (req, res) => {
     const id = req.params.id;
     const tokenUserId = req.userId;
 
     try {
-        // Find the post with its details
         const post = await prisma.post.findUnique({
             where: { id },
-            include: { postDetail: true } // Include postDetail to check relation
+            include: { postDetail: true }
         });
 
         if (!post) {
             return res.status(404).json({ message: "Post not found" });
         }
 
-        if (post.UserId !== tokenUserId) {
+        if (post.userId !== tokenUserId) {
             return res.status(403).json({ message: "You are not authorized to delete this post" });
         }
 
-        // Delete associated postDetail first
         if (post.postDetail) {
             await prisma.postDetail.delete({
-                where: { PostId: id }
+                where: { postId: id }
             });
         }
 
-        // Now delete the post
         await prisma.post.delete({
             where: { id }
         });
