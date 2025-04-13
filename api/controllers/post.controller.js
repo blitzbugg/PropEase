@@ -27,6 +27,8 @@ export const getPosts = async (req, res) => {
 
 export const getPost = async (req, res) => {
     const id = req.params.id;
+    const tokenUserId = req.userId; // Get the user ID from the token
+
     try {
         const post = await prisma.post.findUnique({
             where: { id },
@@ -40,7 +42,34 @@ export const getPost = async (req, res) => {
                 }
             }
         });
-        res.status(200).json(post);
+
+        // Check if post exists
+        if (!post) {
+            return res.status(404).json({ message: "Post not found" });
+        }
+
+        // Check if the user has saved this post
+        let isSaved = false;
+        if (tokenUserId) {
+            const savedPost = await prisma.savePost.findUnique({
+                where: {
+                    userId_postId: {
+                        userId: tokenUserId,
+                        postId: id,
+                    }
+                }
+            });
+            isSaved = !!savedPost;
+        }
+
+        res.status(200).json({
+            ...post,
+            isSaved // Add the isSaved flag to the response
+        });
+        // console.log("Post fetched successfully:", post);
+        // console.log(isSaved);
+        
+        
     } catch (err) {
         console.log(err);
         res.status(500).json({ message: "Error getting post" });
