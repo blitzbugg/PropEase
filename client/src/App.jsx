@@ -12,7 +12,7 @@ import Register from './routes/Register';
 import Login from './routes/Login';
 import { Layout, RequireAuth } from './routes/Layout';
 import NewPostPage from './routes/NewPostPage';
-import { listPageLoader, singlePageLoader } from './lib/loaders';
+import { listPageLoader, profilePageLoader, singlePageLoader } from './lib/loaders';
 
 const router = createBrowserRouter([
   {
@@ -27,7 +27,7 @@ const router = createBrowserRouter([
   {
     element: <RequireAuth />, // Protected routes wrapper
     children: [
-      { path: 'profile', element: <ProfilePage /> },
+      { path: 'profile', element: <ProfilePage />, loader: profilePageLoader},
       { path: 'profile/update', element: <ProfileUpdatePage /> },
       { path: ':id', element: <SinglePage />, loader: singlePageLoader,},
       { path: 'add', element: <NewPostPage /> },
