@@ -1,108 +1,232 @@
-import React, { useState } from 'react';
-import { contacts, messages } from '../lib/dummydata';
-function Chat() {
-  // Sample data for contacts
-  
+import { useContext, useEffect, useRef, useState } from "react";
+import { AuthContext } from "../context/AuthContext";
+import apiRequest from "../lib/apiRequest";
+import { format } from "timeago.js";
+import { SocketContext } from "../context/SocketContext";
 
-  const [selectedContact, setSelectedContact] = useState(contacts[0]);
+function Chat({ chats }) {
+  const [chat, setChat] = useState(null);
+  const { currentUser } = useContext(AuthContext);
+  const { socket } = useContext(SocketContext);
+  const messageEndRef = useRef();
+
+  useEffect(() => {
+    messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chat]);
+
+  const handleOpenChat = async (chatInfo) => {
+    try {
+      const res = await apiRequest("/chats/" + chatInfo.id);
+      // Store both the API response data and the basic chat info
+      setChat({
+        ...res.data,
+        id: chatInfo.id,
+        name: chatInfo.name,
+        avatar: chatInfo.avatar
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const text = formData.get("text");
+
+    if (!text) return;
+    try {
+      const res = await apiRequest.post("/messages/" + chat.id, { text });
+      e.target.reset();
+      setChat((prev) => ({ ...prev, messages: [...prev.messages, res.data] }));
+      socket.emit("sendMessage", {
+        receiverId: chat.receiverId, // This should be the ID of the other user
+        data: res.data,
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    const read = async () => {
+      try {
+        await apiRequest.put("/chats/read/" + chat.id);
+      } catch (error) {
+        console.log("Error marking chat as read:", error);
+      }
+    };
+    
+    if (chat && socket) {
+      // Define message handler
+      const messageHandler = (data) => {
+        console.log("Message received:", data);
+        console.log("Current chat ID:", chat.id);
+        
+        // Convert IDs to strings to ensure consistent comparison
+        const currentChatId = String(chat.id);
+        const messageChatId = String(data.chatId);
+        
+        if (currentChatId === messageChatId) {
+          console.log("Message belongs to current chat, updating...");
+          setChat(prev => {
+            // Make sure prev is not null before updating
+            if (!prev) return prev;
+            return { ...prev, messages: [...prev.messages, data] };
+          });
+          read();
+        } else {
+          console.log("Message for different chat:", messageChatId);
+        }
+      };
+      
+      // Add event listener
+      socket.on("getMessage", messageHandler);
+      
+      // Clean up function
+      return () => {
+        socket.off("getMessage", messageHandler);
+      };
+    }
+  }, [socket, chat]);
 
   return (
-    <div className="h-auto flex flex-col bg-gray-50 rounded-xl shadow-lg overflow-hidden">
-      {/* Header */}
-      <div className="px-3 py-2 bg-white border-b shadow-sm">
-        <h2 className="text-lg font-bold text-gray-800">Messages</h2>
-      </div>
-
-      {/* Contacts List */}
-      <div className="overflow-y-auto h-auto">
-        {contacts.map((contact) => (
-          <div 
-            key={contact.id}
-            onClick={() => setSelectedContact(contact)}
-            className={`flex items-center gap-2 py-2 px-3 border-b cursor-pointer hover:bg-gray-100 transition-colors ${selectedContact.id === contact.id ? 'bg-gray-100' : ''}`}
-          >
-            <div className="relative">
-              <div className="w-10 h-10 rounded-full overflow-hidden">
-                <img 
-                  className="w-full h-full object-cover" 
-                  src={contact.avatar} 
-                  alt={contact.name} 
-                />
-              </div>
-              {contact.unread > 0 && (
-                <div className="absolute -top-1 -right-1 bg-indigo-600 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
-                  {contact.unread}
-                </div>
-              )}
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex justify-between">
-                <h3 className="font-semibold text-gray-900 text-sm truncate">{contact.name}</h3>
-                <span className="text-xs text-gray-500">{contact.timestamp}</span>
-              </div>
-              <p className="text-xs text-gray-600 truncate">{contact.lastMessage}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Divider */}
-      <div className="bg-indigo-600 h-1"></div>
-
-      {/* Chat Area */}
-      <div className="flex flex-col flex-1 min-h-96"> {/* Use flex-1 to fill remaining space */}
-        {/* Chat Header */}
-        <div className="px-3 py-2 bg-white border-b flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full overflow-hidden">
-            <img 
-              className="w-full h-full object-cover" 
-              src={selectedContact.avatar} 
-              alt={selectedContact.name} 
-            />
-          </div>
-          <div className="flex-1">
-            <h3 className="font-semibold text-sm text-gray-900">{selectedContact.name}</h3>
-          </div>
-        </div>
-        
-        {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-2 space-y-2 bg-gray-100">
-          {messages.map((message) => (
-            <div 
-              key={message.id} 
-              className={`flex ${message.isOwn ? 'justify-end' : 'justify-start'}`}
+    <div className="flex h-[calc(100vh-100px)] border border-gray-200 rounded-lg overflow-hidden">
+      {/* Messages sidebar */}
+      <div className="w-1/3 border-r border-gray-200 bg-white overflow-y-auto">
+        <h1 className="p-4 text-xl font-bold border-b border-gray-200">Messages</h1>
+        <div className="divide-y divide-gray-100">
+          {chats?.map((c) => (
+            <div
+              className={`p-4 cursor-pointer hover:bg-gray-50 ${
+                chat?.id === c.id ? "bg-white" : c.unread > 0 ? "bg-yellow-50" : "bg-white"
+              }`}
+              key={c.id}
+              onClick={() => handleOpenChat(c)}
             >
-              <div className={`max-w-[75%] ${message.isOwn ? 'bg-indigo-600 text-white rounded-tl-xl rounded-tr-xl rounded-bl-xl' : 'bg-white rounded-tl-xl rounded-tr-xl rounded-br-xl'} p-2 shadow-sm`}>
-                <p className={`text-xs ${message.isOwn ? 'text-white' : 'text-gray-800'}`}>{message.content}</p>
-                <div className={`text-xs mt-1 ${message.isOwn ? 'text-indigo-200' : 'text-gray-500'} text-right`}>
-                  {message.timestamp}
+              <div className="flex items-center gap-3">
+                <img 
+                  src={c.avatar || "/noavatar.jpg"} 
+                  alt="" 
+                  className="w-10 h-10 rounded-full object-cover"
+                />
+                <div className="flex-1 min-w-0">
+                  <div className="flex justify-between items-center">
+                    <span className="font-medium truncate">{c.name}</span>
+                    {c.timestamp && (
+                      <span className="text-xs text-gray-500">{c.timestamp}</span>
+                    )}
+                  </div>
+                  <p className="text-sm text-gray-500 truncate">{c.lastMessage}</p>
                 </div>
+                {c.unread > 0 && (
+                  <span className="bg-blue-500 text-white text-xs font-medium px-2 py-1 rounded-full">
+                    {c.unread}
+                  </span>
+                )}
               </div>
             </div>
           ))}
         </div>
+      </div>
 
-        {/* Message Input */}
-        <div className="px-2 py-2 bg-white border-t">
-          <div className="flex items-center gap-2">
-            <button className="p-1 rounded-full hover:bg-gray-100 text-gray-500">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-              </svg>
-            </button>
-            <input 
-              type="text" 
-              placeholder="Type a message..." 
-              className="flex-1 border rounded-full py-1 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-            />
-            <button className="p-1 rounded-full bg-indigo-600 text-white hover:bg-indigo-700">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-              </svg>
+      {/* Chat box */}
+      {chat ? (
+        <div className="flex-1 flex flex-col bg-white">
+          {/* Chat header */}
+          <div className="flex justify-between items-center p-4 border-b border-gray-200">
+            <div className="flex items-center gap-3">
+              <img 
+                src={chat.avatar || "/noavatar.jpg"} 
+                alt="" 
+                className="w-10 h-10 rounded-full object-cover"
+              />
+              <span className="font-medium">{chat.name}</span>
+            </div>
+            <button 
+              onClick={() => setChat(null)}
+              className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center"
+            >
+              ×
             </button>
           </div>
+
+          {/* Messages area */}
+          <div className="flex-1 p-4 overflow-y-auto bg-gray-50">
+            {chat.messages && chat.messages.length > 0 ? (
+              <div className="space-y-4">
+                {chat.messages.map((message) => {
+                  const isCurrentUser = message.userId === currentUser.id;
+                  
+                  return (
+                    <div
+                      key={message.id}
+                      className={`flex flex-col max-w-[80%] ${
+                        isCurrentUser 
+                          ? "ml-auto items-end" 
+                          : "mr-auto items-start"
+                      }`}
+                    >
+                      {/* Add sender info above each message */}
+                      <div className="flex items-center gap-2 mb-1">
+                        <img 
+                          src={(isCurrentUser ? currentUser.avatar : chat.avatar) || "/noavatar.jpg"} 
+                          alt="" 
+                          className="w-6 h-6 rounded-full object-cover"
+                        />
+                        <span className="text-xs text-gray-600 font-medium">
+                          {isCurrentUser ? currentUser.name : chat.name}
+                        </span>
+                      </div>
+                      
+                      <div className={`px-4 py-2 rounded-lg ${
+                        isCurrentUser
+                          ? "bg-blue-500 text-white rounded-br-none"
+                          : "bg-white border border-gray-200 rounded-bl-none"
+                      }`}>
+                        <p>{message.text}</p>
+                      </div>
+                      <span className="text-xs text-gray-500 mt-1">
+                        {format(message.createdAt)}
+                      </span>
+                    </div>
+                  );
+                })}
+                <div ref={messageEndRef} />
+              </div>
+            ) : (
+              <div className="flex items-center justify-center h-full text-gray-500">
+                Start a conversation with {chat.name}
+              </div>
+            )}
+          </div>
+
+          {/* Message input */}
+          <form onSubmit={handleSubmit} className="p-4 border-t border-gray-200">
+            <div className="flex gap-2">
+              <textarea
+                name="text"
+                className="flex-1 border border-gray-200 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                rows="1"
+                placeholder="Type a message..."
+              />
+              <button 
+                type="submit" 
+                className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+              >
+                Send
+              </button>
+            </div>
+          </form>
         </div>
-      </div>
+      ) : (
+        <div className="flex-1 flex items-center justify-center bg-gray-50">
+          <div className="text-center p-8">
+            <h2 className="text-xl font-medium mb-2">Select a conversation</h2>
+            <p className="text-gray-500">Choose a chat from the sidebar to start messaging</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

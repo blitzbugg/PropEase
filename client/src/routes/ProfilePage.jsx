@@ -94,7 +94,7 @@ const ProfilePage = () => {
               </div>
               
               <div className="p-6">
-                <List data={data.userPosts} />
+                <List data={data.profile.userPosts} />
               </div>
             </div>
           </div>
@@ -115,7 +115,8 @@ const ProfilePage = () => {
               </div>
               
               <div className="p-6">
-                <Chat />
+              <Chat chats={data.chats} />
+
               </div>
             </div>
 
@@ -133,7 +134,7 @@ const ProfilePage = () => {
               </div>
               
               <div className="p-6">
-                <List data={data.savedPosts} />
+                <List data={data.profile.savedPosts} />
               </div>
             </div>
           </div>
