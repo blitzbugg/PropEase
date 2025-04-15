@@ -24,7 +24,8 @@
     "react-router-dom": "^7.2.0",
     "socket.io-client": "^4.8.1",
     "tailwindcss": "^4.0.8",
-    "timeago.js": "^4.0.2"
+    "timeago.js": "^4.0.2",
+    "zustand": "^5.0.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",

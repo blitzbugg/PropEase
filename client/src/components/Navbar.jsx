@@ -1,11 +1,21 @@
 import React, { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import { useNotificationStore } from '../lib/notificationStore.js';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const {currentUser} = useContext(AuthContext);
+
+  const fetch = useNotificationStore(state => state.fetch);
+  const number = useNotificationStore(state => state.number);
+
+  React.useEffect(() => {
+    if (currentUser) {
+      fetch();
+    }
+  }, [currentUser, fetch]);
 
   return (
     <nav className="relative bg-gradient-to-r from-indigo-100 to-purple-100 shadow-md w-full top-0 z-50">
@@ -60,9 +70,9 @@ const Navbar = () => {
                     alt="profile"
                     className="w-8 h-8 rounded-full object-cover"
                   />
-                  <span className="absolute top-0 right-0 bg-red-500 text-white rounded-full px-2 py-1 text-xs transform translate-x-1/2 -translate-y-1/2">
-                    3
-                  </span>
+                  {number>0 && <span className="absolute top-0 right-0 bg-red-500 text-white rounded-full px-2 py-1 text-xs transform translate-x-1/2 -translate-y-1/2">
+                    {number}
+                  </span>}
                 </div>
                 <span className="text-gray-800 text-sm font-medium">{currentUser.username}</span>
                 <Link
@@ -167,7 +177,7 @@ const Navbar = () => {
                         className="w-8 h-8 rounded-full object-cover"
                       />
                       <span className="absolute top-0 right-0 bg-red-500 text-white rounded-full px-2 py-1 text-xs transform translate-x-1/2 -translate-y-1/2">
-                        3
+                        {number}
                       </span>
                     </div>
                     <span className="text-gray-800 text-sm font-medium">John Doe</span>
