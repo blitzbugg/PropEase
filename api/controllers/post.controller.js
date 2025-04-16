@@ -138,7 +138,10 @@ export const deletePost = async (req, res) => {
     try {
         const post = await prisma.post.findUnique({
             where: { id },
-            include: { postDetail: true }
+            include: {
+                postDetail: true,
+                savedPost: true, // optional if you want to check before deletion
+            },
         });
 
         if (!post) {
@@ -149,14 +152,21 @@ export const deletePost = async (req, res) => {
             return res.status(403).json({ message: "You are not authorized to delete this post" });
         }
 
+        // 1. Delete related PostDetail
         if (post.postDetail) {
             await prisma.postDetail.delete({
-                where: { postId: id }
+                where: { PostId: id },
             });
         }
 
+        // 2. Delete related SavedPosts
+        await prisma.savedPost.deleteMany({
+            where: { postId: id },
+        });
+
+        // 3. Delete Post
         await prisma.post.delete({
-            where: { id }
+            where: { id },
         });
 
         res.status(200).json({ message: "Post deleted successfully" });
