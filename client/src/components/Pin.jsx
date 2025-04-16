@@ -4,6 +4,7 @@ import L from "leaflet";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
 import { Link } from "react-router-dom";
+
 // Fix Leaflet icon issue
 const customIcon = new L.Icon({
   iconUrl: markerIcon,
@@ -13,17 +14,30 @@ const customIcon = new L.Icon({
   popupAnchor: [1, -34],
 });
 
-function Pin({item}) {
+function Pin({ item }) {
+  const openGoogleMaps = (e) => {
+    e.preventDefault();
+    const { latitude, longitude } = item;
+    window.open(`https://www.google.com/maps?q=${latitude},${longitude}`, '_blank');
+  };
+
   return (
     <Marker position={[item.latitude, item.longitude]} icon={customIcon}>
       <Popup>
         <div className="flex gap-5">
-            <img src={item.images[0]} alt="" className="w-16 h-12 object-cover border-2"/>
-            <div className="flex flex-col justify-between">
-                <Link to={`/${item.id}`}>{item.title}</Link>
-                <span>{item.bedroom} bedroom</span>
-                <b>₹ {item.price}</b>
-            </div>
+          <img src={item.images[0]} alt="" className="w-16 h-12 object-cover border-2" />
+          <div className="flex flex-col justify-between">
+            <Link to={`/${item.id}`}>{item.title}</Link>
+            <span>{item.bedroom} bedroom</span>
+            <b>₹ {item.price}</b>
+            <a 
+              href={`https://www.google.com/maps?q=${item.latitude},${item.longitude}`} 
+              onClick={openGoogleMaps}
+              className="text-blue-500 hover:underline"
+            >
+              Open in Google Maps
+            </a>
+          </div>
         </div>
       </Popup>
     </Marker>
