@@ -7,6 +7,8 @@ import apiRequest from "../lib/apiRequest";
 const SinglePage = () => {
   const post = useLoaderData();
   const [saved, setSaved] = useState(post.isSaved || false);
+  console.log(post);
+  
 
   const handleSave = async () => {
     setSaved((prev) => !prev);
@@ -101,14 +103,14 @@ const SinglePage = () => {
                   : "Tenant pays for all utilities"}</span>
               </div>
               <div className="mb-2 flex">
-                <span className="font-medium text-gray-600 w-24">Pet policy:</span>
-                <span>{post.postDetail.pets === "allowed"
-                  ? "Pets are allowed"
-                  : "Pets are not allowed"}</span>
+                <span className="font-medium text-gray-600 w-24">Parking policy:</span>
+                <>{post.postDetail.parking === "allowed"
+                  ? "Parkings available"
+                  : "No parking available"}</>
               </div>
               <div className="flex">
-                <span className="font-medium text-gray-600 w-24">Income:</span>
-                <span>{post.postDetail.income}</span>
+                <span className="font-medium text-gray-600 w-24">Advance:</span>
+                <span>{post.postDetail.advance === "Required" ? "Advance is Required" : "Advance is not necessary"}</span>
               </div>
             </div>
           </div>

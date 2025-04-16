@@ -202,8 +202,8 @@
             postDetail: {
               desc: value,
               utilities: inputs.utilities,
-              pet: inputs.pet,
-              income: inputs.income,
+              parking: inputs.parking,
+              advance: inputs.advance,
               size: parseInt(inputs.size),
               school: parseInt(inputs.school),
               bus: parseInt(inputs.bus),
@@ -358,9 +358,9 @@
                   </select>
                 </div>
                 <div className="w-[30%] flex flex-col gap-2">
-                  <label htmlFor="pet" className="font-medium">Pet Policy</label>
+                  <label htmlFor="parking" className="font-medium">parking Policy</label>
                   <select 
-                    name="pet" 
+                    name="parking" 
                     className="p-3 rounded-md border border-gray-300"
                   >
                     <option value="allowed">Allowed</option>
@@ -368,13 +368,14 @@
                   </select>
                 </div>
                 <div className="w-[30%] flex flex-col gap-2">
-                  <label htmlFor="income" className="font-medium">Income Policy</label>
-                  <input 
-                    id="income" 
-                    name="income" 
-                    type="text" 
+                  <label htmlFor="advance" className="font-medium">Advance Policy</label>
+                  <select 
+                    name="advance" 
                     className="p-3 rounded-md border border-gray-300"
-                  />
+                  >
+                    <option value="Required">Required</option>
+                    <option value="Not Required">Not Required</option>
+                  </select>
                 </div>
                 <div className="w-[30%] flex flex-col gap-2">
                   <label htmlFor="size" className="font-medium">Size (sqft)</label>
@@ -387,7 +388,7 @@
                   />
                 </div>
                 <div className="w-[30%] flex flex-col gap-2">
-                  <label htmlFor="school" className="font-medium">School Rating (1-10)</label>
+                  <label htmlFor="school" className="font-medium">Schools Nearby</label>
                   <input 
                     id="school" 
                     name="school" 

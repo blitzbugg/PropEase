@@ -50,8 +50,8 @@ model PostDetail {
   id String @id @default(auto()) @map("_id") @db.ObjectId
   desc String
   utilities String?
-  pet String?
-  income String?
+  parking String?
+  advance String?
   size Int?
   school Int?
   bus Int?
