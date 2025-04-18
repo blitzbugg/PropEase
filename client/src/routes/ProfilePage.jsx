@@ -2,12 +2,14 @@ import React, { useContext } from 'react';
 import List from '../components/List';
 import Chat from '../components/Chat';
 import apiRequest from '../lib/apiRequest';
-import { Link, useLoaderData, useNavigate } from 'react-router-dom';
+import { Link, useLoaderData, useNavigate, useParams } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 
 const ProfilePage = () => {
   const data = useLoaderData();
+  const { chatId } = useParams();
   console.log("ProfilePage data:", data);
+  console.log("Chat ID from URL:", chatId);
   
   const {updateUser, currentUser} = useContext(AuthContext);
   const navigate = useNavigate();
@@ -115,8 +117,11 @@ const ProfilePage = () => {
               </div>
               
               <div className="p-6">
-              <Chat chats={data.chats} />
-
+                <Chat 
+                  chats={data.chats} 
+                  initialChatId={chatId} 
+                  key={chatId}
+                />
               </div>
             </div>
 
