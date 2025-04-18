@@ -3,50 +3,85 @@ import { AuthContext } from "../context/AuthContext";
 import apiRequest from "../lib/apiRequest";
 import { format } from "timeago.js";
 import { SocketContext } from "../context/SocketContext";
+import { useNavigate } from "react-router-dom";
 
-function Chat({ chats }) {
+function Chat({ chats, initialChatId }) {
   const [chat, setChat] = useState(null);
+  const [loading, setLoading] = useState(false);
   const { currentUser } = useContext(AuthContext);
   const { socket } = useContext(SocketContext);
   const messageEndRef = useRef();
+  const navigate = useNavigate();
+  const [shouldScroll, setShouldScroll] = useState(true);
 
   useEffect(() => {
-    messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (shouldScroll && messageEndRef.current) {
+      messageEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [chat?.messages?.length, shouldScroll]);
+
+  useEffect(() => {
+    const chatContainer = messageEndRef.current?.parentElement;
+    
+    const handleScroll = () => {
+      if (chatContainer) {
+        const { scrollTop, scrollHeight, clientHeight } = chatContainer;
+        const isNearBottom = scrollHeight - scrollTop - clientHeight < 100;
+        setShouldScroll(isNearBottom);
+      }
+    };
+
+    if (chatContainer) {
+      chatContainer.addEventListener('scroll', handleScroll);
+      return () => chatContainer.removeEventListener('scroll', handleScroll);
+    }
   }, [chat]);
 
   const handleOpenChat = async (chatInfo) => {
+    if (loading) return;
+    if (chat?.id === chatInfo.id) return;
+
+    setLoading(true);
     try {
+      console.log("Opening chat:", chatInfo);
       const res = await apiRequest("/chats/" + chatInfo.id);
-      // Store both the API response data and the basic chat info
+      console.log("Chat API response:", res);
+      
+      navigate(`/profile/c/${chatInfo.id}`);
+      
       setChat({
         ...res.data,
         id: chatInfo.id,
         name: chatInfo.name,
-        avatar: chatInfo.avatar
+        avatar: chatInfo.avatar,
+        unread: 0
       });
+
+      await apiRequest.put("/chats/read/" + chatInfo.id);
+      
     } catch (err) {
-      console.log(err);
+      console.error("Error opening chat:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const text = formData.get("text");
-
-    if (!text) return;
-    try {
-      const res = await apiRequest.post("/messages/" + chat.id, { text });
-      e.target.reset();
-      setChat((prev) => ({ ...prev, messages: [...prev.messages, res.data] }));
-      socket.emit("sendMessage", {
-        receiverId: chat.receiverId, // This should be the ID of the other user
-        data: res.data,
-      });
-    } catch (err) {
-      console.log(err);
+  useEffect(() => {
+    if (initialChatId && chats && !chat) {
+      const initialChat = chats.find(c => c.id === initialChatId);
+      if (initialChat) {
+        handleOpenChat(initialChat);
+      }
     }
-  };
+  }, [initialChatId, chats]);
+
+  useEffect(() => {
+    if (chat && chats) {
+      const updatedChats = chats.map(c => 
+        c.id === chat.id ? { ...c, unread: 0 } : c
+      );
+    }
+  }, [chat?.id]);
 
   useEffect(() => {
     const read = async () => {
@@ -58,37 +93,48 @@ function Chat({ chats }) {
     };
     
     if (chat && socket) {
-      // Define message handler
       const messageHandler = (data) => {
-        console.log("Message received:", data);
-        console.log("Current chat ID:", chat.id);
-        
-        // Convert IDs to strings to ensure consistent comparison
         const currentChatId = String(chat.id);
         const messageChatId = String(data.chatId);
         
         if (currentChatId === messageChatId) {
-          console.log("Message belongs to current chat, updating...");
+          setShouldScroll(true);
           setChat(prev => {
-            // Make sure prev is not null before updating
             if (!prev) return prev;
-            return { ...prev, messages: [...prev.messages, data] };
+            return { 
+              ...prev, 
+              messages: [...prev.messages, data],
+              unread: 0
+            };
           });
           read();
-        } else {
-          console.log("Message for different chat:", messageChatId);
         }
       };
       
-      // Add event listener
       socket.on("getMessage", messageHandler);
-      
-      // Clean up function
-      return () => {
-        socket.off("getMessage", messageHandler);
-      };
+      return () => socket.off("getMessage", messageHandler);
     }
   }, [socket, chat]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const text = formData.get("text");
+
+    if (!text) return;
+    try {
+      const res = await apiRequest.post("/messages/" + chat.id, { text });
+      e.target.reset();
+      setShouldScroll(true);
+      setChat((prev) => ({ ...prev, messages: [...prev.messages, res.data] }));
+      socket.emit("sendMessage", {
+        receiverId: chat.receiverId,
+        data: res.data,
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <div className="flex h-[calc(100vh-100px)] border border-gray-200 rounded-lg overflow-hidden">
@@ -99,7 +145,11 @@ function Chat({ chats }) {
           {chats?.map((c) => (
             <div
               className={`p-4 cursor-pointer hover:bg-gray-50 ${
-                chat?.id === c.id ? "bg-white" : c.unread > 0 ? "bg-yellow-50" : "bg-white"
+                chat?.id === c.id 
+                  ? "bg-blue-50" 
+                  : c.unread > 0 
+                    ? "bg-yellow-50" 
+                    : "bg-white"
               }`}
               key={c.id}
               onClick={() => handleOpenChat(c)}
@@ -119,11 +169,6 @@ function Chat({ chats }) {
                   </div>
                   <p className="text-sm text-gray-500 truncate">{c.lastMessage}</p>
                 </div>
-                {c.unread > 0 && (
-                  <span className="bg-blue-500 text-white text-xs font-medium px-2 py-1 rounded-full">
-                    {c.unread}
-                  </span>
-                )}
               </div>
             </div>
           ))}
@@ -144,7 +189,10 @@ function Chat({ chats }) {
               <span className="font-medium">{chat.name}</span>
             </div>
             <button 
-              onClick={() => setChat(null)}
+              onClick={() => {
+                setChat(null);
+                navigate('/profile');
+              }}
               className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center"
             >
               ×
@@ -222,8 +270,17 @@ function Chat({ chats }) {
       ) : (
         <div className="flex-1 flex items-center justify-center bg-gray-50">
           <div className="text-center p-8">
-            <h2 className="text-xl font-medium mb-2">Select a conversation</h2>
-            <p className="text-gray-500">Choose a chat from the sidebar to start messaging</p>
+            {loading ? (
+              <div className="flex items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                <span className="ml-2">Loading chat...</span>
+              </div>
+            ) : (
+              <>
+                <h2 className="text-xl font-medium mb-2">Select a conversation</h2>
+                <p className="text-gray-500">Choose a chat from the sidebar to start messaging</p>
+              </>
+            )}
           </div>
         </div>
       )}

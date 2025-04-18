@@ -18,29 +18,12 @@ export const listPageLoader = async ({request, params}) => {
 }
 // In loaders.js
 // In loaders.js
-export const profilePageLoader = async () => {
+export const profilePageLoader = async ({ params }) => {
     const profile = await apiRequest("/users/profilePosts");
     const chats = await apiRequest("/chats");
   
-    // Group chats by receiver ID
-    const chatsByReceiver = chats.data?.reduce((acc, chat) => {
-      const receiverId = chat.receiver.id;
-      
-      // If we already have a chat with this receiver, update it
-      if (acc[receiverId]) {
-        // Keep the most recent chat
-        if (new Date(chat.createdAt) > new Date(acc[receiverId].createdAt)) {
-          acc[receiverId] = chat;
-        }
-      } else {
-        acc[receiverId] = chat;
-      }
-      
-      return acc;
-    }, {});
-  
-    // Transform grouped chats data
-    const transformedChats = Object.values(chatsByReceiver || {}).map(chat => ({
+    // Transform all chats data without grouping
+    const transformedChats = chats.data?.map(chat => ({
       id: chat.id,
       name: chat.receiver.username,
       avatar: chat.receiver.avatar,
@@ -48,10 +31,11 @@ export const profilePageLoader = async () => {
       timestamp: new Date(chat.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       unread: chat.seenBy.includes(chat.receiver.id) ? 0 : 1,
       messages: [] // Will be fetched separately
-    }));
+    })) || [];
   
     return {
       profile: profile.data,
-      chats: transformedChats
+      chats: transformedChats,
+      activeChatId: params?.chatId || null
     };
   }

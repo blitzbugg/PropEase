@@ -28,6 +28,7 @@ const router = createBrowserRouter([
     element: <RequireAuth />, // Protected routes wrapper
     children: [
       { path: 'profile', element: <ProfilePage />, loader: profilePageLoader},
+      { path: 'profile/c/:chatId', element: <ProfilePage />, loader: profilePageLoader},
       { path: 'profile/update', element: <ProfileUpdatePage /> },
       { path: ':id', element: <SinglePage />, loader: singlePageLoader,},
       { path: 'add', element: <NewPostPage /> },
