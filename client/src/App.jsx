@@ -12,6 +12,7 @@ import Register from './routes/Register';
 import Login from './routes/Login';
 import { Layout, RequireAuth } from './routes/Layout';
 import NewPostPage from './routes/NewPostPage';
+import EditPostPage from './routes/EditPostPage';
 import { listPageLoader, profilePageLoader, singlePageLoader } from './lib/loaders';
 
 const router = createBrowserRouter([
@@ -32,6 +33,7 @@ const router = createBrowserRouter([
       { path: 'profile/update', element: <ProfileUpdatePage /> },
       { path: ':id', element: <SinglePage />, loader: singlePageLoader,},
       { path: 'add', element: <NewPostPage /> },
+      { path: 'edit/:id', element: <EditPostPage /> },
     ],
   },
 ]);

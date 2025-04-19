@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
 
 const Card = ({ property = {} }) => {
-  // Set default values for all required properties
+  const { currentUser } = useContext(AuthContext);
   const {
     id = '',
     images = '/default-property.jpg',
@@ -10,8 +11,11 @@ const Card = ({ property = {} }) => {
     address = 'Address not available',
     price = 0,
     bedroom = 0,
-    bathroom = 1
+    bathroom = 1,
+    userId = '',
   } = property;
+
+  const isOwner = currentUser?.id === userId;
 
   return (
     <Link to={`/${id}`} className="block">
@@ -35,14 +39,7 @@ const Card = ({ property = {} }) => {
               {title}
             </h2>
 
-            <div className="flex items-center mb-2">
-              <img
-                src="https://cdn-icons-png.flaticon.com/512/684/684908.png"
-                alt="Location"
-                className="h-4 w-4 text-gray-500 mr-1"
-              />
-              <span className="text-gray-600 text-xs">{address}</span>
-            </div>
+            <p className="text-gray-600 text-xs mb-2">{address}</p>
 
             <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 inline-block px-3 py-1 rounded-full mb-2 text-white font-semibold shadow-sm">
               <span className="text-sm">$ {price.toLocaleString()}</span>
@@ -51,12 +48,9 @@ const Card = ({ property = {} }) => {
             <div className="flex flex-wrap gap-3">
               <div className="flex items-center">
                 <img
-                  src="./bed.png"
+                  src="/bed.png"
                   alt="Bedrooms"
                   className="h-4 w-4 text-gray-500 mr-1"
-                  onError={(e) => {
-                    e.target.src = 'https://cdn-icons-png.flaticon.com/512/659/659841.png';
-                  }}
                 />
                 <span className="text-gray-700 text-xs">
                   {bedroom} bed{bedroom !== 1 && 's'}
@@ -65,12 +59,9 @@ const Card = ({ property = {} }) => {
 
               <div className="flex items-center">
                 <img
-                  src="./bath.png"
+                  src="/bath.png"
                   alt="Bathrooms"
                   className="h-4 w-4 text-gray-500 mr-1"
-                  onError={(e) => {
-                    e.target.src = 'https://cdn-icons-png.flaticon.com/512/659/659841.png';
-                  }}
                 />
                 <span className="text-gray-700 text-xs">
                   {bathroom} bath{bathroom !== 1 && 's'}
@@ -80,35 +71,28 @@ const Card = ({ property = {} }) => {
           </div>
 
           <div className="flex justify-end gap-1 mt-2">
-            <button
-              className="p-1 rounded-full hover:bg-gray-100 transition-colors duration-200"
-              aria-label="Save property"
-              onClick={(e) => e.preventDefault()}
-            >
-              <img
-                src="./save.png"
-                alt="Save"
-                className="h-5 w-5 text-gray-500 hover:text-indigo-500 transition-colors duration-200"
-                onError={(e) => {
-                  e.target.src = 'https://cdn-icons-png.flaticon.com/512/5662/5662990.png';
-                }}
-              />
-            </button>
-
-            <button
-              className="p-1 rounded-full hover:bg-gray-100 transition-colors duration-200"
-              aria-label="Message about property"
-              onClick={(e) => e.preventDefault()}
-            >
-              <img
-                src="./chat.png"
-                alt="Message"
-                className="h-5 w-5 text-gray-500 hover:text-indigo-500 transition-colors duration-200"
-                onError={(e) => {
-                  e.target.src = 'https://cdn-icons-png.flaticon.com/512/666/666162.png';
-                }}
-              />
-            </button>
+            {isOwner && (
+              <Link
+                to={`/edit/${id}`}
+                onClick={(e) => e.stopPropagation()}
+                className="p-1 rounded-full hover:bg-gray-100 transition-colors duration-200"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 text-gray-500 hover:text-blue-500"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                  />
+                </svg>
+              </Link>
+            )}
           </div>
         </div>
       </div>
