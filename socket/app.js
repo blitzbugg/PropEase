@@ -2,6 +2,9 @@ import express from "express";
 import http from "http";
 import { Server } from "socket.io";
 import cors from "cors";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 // Create an Express app
 const app = express();
@@ -9,9 +12,9 @@ const app = express();
 // Allow cross-origin requests from your deployed frontend
 app.use(cors({
   origin: [
-    "https://propease.vercel.app", // your deployed frontend
-    "http://localhost:5173"        // keep for local testing
-  ],
+    process.env.CLIENT_URL,
+    "http://localhost:5173"
+  ].filter(Boolean),
   methods: ["GET", "POST"],
   credentials: true,
 }));
@@ -21,9 +24,9 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: [
-      "https://propease.vercel.app",
+      process.env.CLIENT_URL,
       "http://localhost:5173"
-    ],
+    ].filter(Boolean),
     methods: ["GET", "POST"],
   },
 });
