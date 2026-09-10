@@ -1,7 +1,6 @@
 import prisma from "../lib/prisma.js";
 
 export const getChats = async (req, res) => {
-
     const tokenUserId = req.userId;
     
     try {
@@ -10,10 +9,13 @@ export const getChats = async (req, res) => {
                 userIDs: {
                     hasSome: [tokenUserId],
                 }
+            },
+            orderBy: {
+                createdAt: "desc"
             }
         });
 
-        for(const chat of chats) {
+        for (const chat of chats) {
             const receiverId = chat.userIDs.find(id => id !== tokenUserId);
 
             const receiver = await prisma.user.findUnique({
@@ -27,6 +29,8 @@ export const getChats = async (req, res) => {
                 }
             });
             chat.receiver = receiver;
+            chat.receiverId = receiverId;
+            chat.isSeen = chat.seenBy.includes(tokenUserId);
         }
         res.status(200).json(chats);
     } catch (err) {
@@ -40,7 +44,7 @@ export const findOrCreateChat = async (req, res) => {
     const { receiverId } = req.body;
 
     try {
-        // Modified query to ensure both users are in the chat
+        // Check if chat already exists between both users
         const existingChat = await prisma.chat.findFirst({
             where: {
                 AND: [
@@ -66,6 +70,7 @@ export const findOrCreateChat = async (req, res) => {
         const newChat = await prisma.chat.create({
             data: {
                 userIDs: [tokenUserId, receiverId],
+                seenBy: [tokenUserId],
             }
         });
 
@@ -99,11 +104,8 @@ export const getChat = async (req, res) => {
     const tokenUserId = req.userId;
     const chatId = req.params.id;
     
-    console.log("Getting chat with ID:", chatId);
-    console.log("For user ID:", tokenUserId);
-    
     try {
-      // First get the chat
+      // First get the chat with ordered messages
       const chat = await prisma.chat.findUnique({
         where: {
           id: chatId,
@@ -120,10 +122,7 @@ export const getChat = async (req, res) => {
         },
       });
   
-      console.log("Found chat:", chat);
-  
       if (!chat) {
-        console.log("Chat not found!");
         return res.status(404).json({ message: "Chat not found!" });
       }
   
@@ -137,8 +136,6 @@ export const getChat = async (req, res) => {
           avatar: true,
         }
       });
-  
-      console.log("Found receiver:", receiver);
   
       // Update seenBy only if not already seen
       if (!chat.seenBy.includes(tokenUserId)) {
@@ -155,27 +152,27 @@ export const getChat = async (req, res) => {
       // Add receiver info to the chat object
       const chatWithReceiver = {
         ...chat,
-        receiver: receiver
+        receiver: receiver,
+        receiverId: receiverId,
       };
   
-      console.log("Returning chat with receiver:", chatWithReceiver);
       res.status(200).json(chatWithReceiver);
     } catch (err) {
       console.error("Error in getChat:", err);
       res.status(500).json({ message: "Failed to get chat!" });
     }
-  }
+}
 
 export const addChat = async (req, res) => {
-
     const tokenUserId = req.userId;
     
     try {
         const newChat = await prisma.chat.create({
             data: {
                 userIDs: [tokenUserId, req.body.receiverId],
+                seenBy: [tokenUserId],
             }
-        })
+        });
         res.status(200).json(newChat);
     } catch (err) {
         console.log(err);
@@ -218,4 +215,4 @@ export const readChat = async (req, res) => {
       console.log(err);
       res.status(500).json({ message: "Failed to read chat!" });
     }
-  }
+}
