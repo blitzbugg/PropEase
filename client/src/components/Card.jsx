@@ -18,81 +18,82 @@ const Card = ({ property = {} }) => {
   const isOwner = currentUser?.id === userId;
 
   return (
-    <Link to={`/${id}`} className="block">
-      <div className="flex flex-col md:flex-row bg-white rounded-xl shadow-lg overflow-hidden mb-4 transform transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-        {/* Image Section with fallback */}
-        <div className="md:w-2/5 h-48 overflow-hidden relative">
+    <Link to={`/${id}`} className="block group">
+      <div className="flex flex-col md:flex-row bg-white rounded-2xl border border-slate-200 overflow-hidden mb-4 transition-all duration-300 hover:shadow-[0_16px_40px_rgba(15,23,42,0.1)] hover:-translate-y-1">
+        {/* Image Section */}
+        <div className="md:w-2/5 h-48 md:h-52 overflow-hidden relative bg-slate-100">
           <img
-            src={images[0]}
+            src={Array.isArray(images) ? images[0] : images}
             alt={title}
-            className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             onError={(e) => {
               e.target.src = '/default-property.jpg';
             }}
           />
+          <span className="absolute top-3 left-3 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wide text-emerald-700 shadow-sm">
+            Featured
+          </span>
         </div>
 
         {/* Content Section */}
-        <div className="p-4 md:w-3/5 flex flex-col justify-between">
+        <div className="p-5 md:p-6 md:w-3/5 flex flex-col justify-between gap-3">
           <div>
-            <h2 className="text-lg font-bold text-gray-900 mb-2 tracking-tight">
-              {title}
-            </h2>
-
-            <p className="text-gray-600 text-xs mb-2">{address}</p>
-
-            <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 inline-block px-3 py-1 rounded-full mb-2 text-white font-semibold shadow-sm">
-              <span className="text-sm">$ {price.toLocaleString()}</span>
-            </div>
-
-            <div className="flex flex-wrap gap-3">
-              <div className="flex items-center">
-                <img
-                  src="/bed.png"
-                  alt="Bedrooms"
-                  className="h-4 w-4 text-gray-500 mr-1"
-                />
-                <span className="text-gray-700 text-xs">
-                  {bedroom} bed{bedroom !== 1 && 's'}
-                </span>
-              </div>
-
-              <div className="flex items-center">
-                <img
-                  src="/bath.png"
-                  alt="Bathrooms"
-                  className="h-4 w-4 text-gray-500 mr-1"
-                />
-                <span className="text-gray-700 text-xs">
-                  {bathroom} bath{bathroom !== 1 && 's'}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex justify-end gap-1 mt-2">
-            {isOwner && (
-              <Link
-                to={`/edit/${id}`}
-                onClick={(e) => e.stopPropagation()}
-                className="p-1 rounded-full hover:bg-gray-100 transition-colors duration-200"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-gray-500 hover:text-blue-500"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
+            <div className="flex items-start justify-between gap-3">
+              <h2 className="text-lg font-bold text-slate-900 tracking-tight group-hover:text-emerald-700 transition-colors">
+                {title}
+              </h2>
+              {isOwner && (
+                <Link
+                  to={`/edit/${id}`}
+                  onClick={(e) => e.stopPropagation()}
+                  className="p-2 rounded-lg hover:bg-slate-100 transition-colors flex-shrink-0"
+                  title="Edit property"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4 text-slate-400 hover:text-emerald-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
                     strokeWidth={2}
-                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                  />
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                    />
+                  </svg>
+                </Link>
+              )}
+            </div>
+
+            <p className="text-slate-500 text-sm mt-1.5 flex items-center gap-1.5">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              {address}
+            </p>
+
+            <div className="mt-3.5 inline-flex items-baseline gap-1">
+              <span className="text-sm font-bold text-emerald-700">₹</span>
+              <span className="text-xl font-extrabold text-slate-900">{price.toLocaleString()}</span>
+            </div>
+
+            <div className="flex flex-wrap gap-4 mt-4 pt-4 border-t border-slate-100">
+              <div className="flex items-center gap-1.5">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
-              </Link>
-            )}
+                <span className="text-slate-700 text-sm font-medium">{bedroom} bed{bedroom !== 1 && 's'}</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <span className="text-slate-700 text-sm font-medium">{bathroom} bath{bathroom !== 1 && 's'}</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
