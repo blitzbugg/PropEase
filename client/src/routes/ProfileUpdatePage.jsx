@@ -33,54 +33,59 @@ function ProfileUpdatePage() {
   };
 
   return (
-    <div className="flex h-full">
-      <div className="flex-[3] flex items-center justify-center">
-        <form onSubmit={handleSubmit} className="flex flex-col gap-5 w-full max-w-md p-4">
-          <h1 className="text-2xl font-bold mb-4">Update Profile</h1>
-          <div className="flex flex-col gap-1">
-            <label htmlFor="username">Username</label>
+    <div className="flex h-full bg-slate-50">
+      <div className="flex-[3] flex items-center justify-center p-6">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-5 w-full max-w-md bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900">Update Profile</h1>
+            <p className="text-sm text-slate-500 mt-1">Keep your details up to date</p>
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="username" className="text-sm font-semibold text-slate-700">Username</label>
             <input
               id="username"
               name="username"
               type="text"
               defaultValue={currentUser.username}
-              className="p-5 rounded border border-gray-300"
+              className="px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all text-slate-800"
             />
           </div>
-          <div className="flex flex-col gap-1">
-            <label htmlFor="email">Email</label>
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="email" className="text-sm font-semibold text-slate-700">Email</label>
             <input
               id="email"
               name="email"
               type="email"
               defaultValue={currentUser.email}
-              className="p-5 rounded border border-gray-300"
+              className="px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all text-slate-800"
             />
           </div>
-          <div className="flex flex-col gap-1">
-            <label htmlFor="password">Password</label>
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="password" className="text-sm font-semibold text-slate-700">Password</label>
             <input 
               id="password" 
               name="password" 
               type="password" 
-              className="p-5 rounded border border-gray-300"
+              className="px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all text-slate-800"
             />
           </div>
           <button 
             type="submit"
-            className="p-5 rounded bg-teal-600 text-white font-bold cursor-pointer hover:bg-teal-700 transition-colors"
+            className="py-3.5 rounded-xl bg-emerald-600 text-white font-bold cursor-pointer hover:bg-emerald-700 transition-all duration-200 shadow-md shadow-emerald-600/30"
           >
             Update
           </button>
-          {error && <span className="text-red-500">{error}</span>}
+          {error && <span className="text-red-500 text-sm bg-red-50 p-3 rounded-xl">{error}</span>}
         </form>
       </div>
-      <div className="flex-[2] bg-rose-50 flex flex-col gap-5 items-center justify-center p-4">
-        <img 
-          src={avatar[0] || currentUser.avatar || "/noavatar.jpg"} 
-          alt="Profile" 
-          className="w-1/2 object-cover rounded-full aspect-square"
-        />
+      <div className="flex-[2] bg-emerald-50/60 flex flex-col gap-5 items-center justify-center p-4">
+        <div className="w-48 h-48 rounded-full overflow-hidden border-4 border-white shadow-lg bg-white">
+          <img 
+            src={avatar[0] || currentUser.avatar || "/noavatar.jpg"} 
+            alt="Profile" 
+            className="w-full h-full object-cover"
+          />
+        </div>
         <UploadWidget uwConfig={{ cloudName: "dslrhfcwf", 
           uploadPreset: "propease", 
           multiple:false, 
@@ -88,6 +93,9 @@ function ProfileUpdatePage() {
           folder : "avatars",
            }} setState={setAvatar} 
            />
+        <p className="text-xs text-slate-500 text-center max-w-[240px]">
+          Upload a clear photo so buyers can recognise you easily
+        </p>
       </div>
     </div>
   );
