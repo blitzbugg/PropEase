@@ -5,11 +5,11 @@ import { AuthContext } from "../context/AuthContext";
 
 function Layout() {
   return (
-    <div className="h-screen w-full flex flex-col">
+    <div className="h-screen w-full flex flex-col bg-white">
       <div className="navbar">
         <Navbar />
       </div>
-      <div className="flex-1 h-[calc(100vh-100px)]">
+      <div className="flex-1 h-[calc(100vh-100px)] overflow-y-auto">
         <Outlet />
       </div>
     </div>
@@ -22,11 +22,11 @@ function RequireAuth() {
   if (!currentUser) return <Navigate to="/login" />;
   else {
     return (
-      <div className="h-screen max-w-[1366px] mx-auto px-5 flex flex-col">
+      <div className="h-screen max-w-[1366px] mx-auto px-5 flex flex-col bg-slate-50">
         <div className="navbar">
           <Navbar />
         </div>
-        <div className="flex-1 h-[calc(100vh-100px)]">
+        <div className="flex-1 h-[calc(100vh-100px)] overflow-y-auto">
           <Outlet />
         </div>
       </div>
@@ -34,4 +34,4 @@ function RequireAuth() {
   }
 }
 
-export { Layout, RequireAuth };
+export { Layout, RequireAuth };
